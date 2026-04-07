@@ -27,6 +27,7 @@
     import Mark from '../Mark.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
+    import { SvelteMap } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().hull
@@ -51,7 +52,7 @@
 
     function computeHulls(scaledData: ScaledDataRecord<Datum>[]) {
         // Group by z channel (or fill/stroke as fallback)
-        const groups = new Map<
+        const groups = new SvelteMap<
             string | number | null,
             { indices: number[]; datum: ScaledDataRecord<Datum> }
         >();
@@ -94,7 +95,7 @@
     {#snippet children({ scaledData, usedScales })}
         {@const hulls = computeHulls(scaledData)}
         <g class={className}>
-            {#each hulls as hull}
+            {#each hulls as hull (hull.path)}
                 {@const [style, styleClass] = resolveStyles(
                     plot,
                     hull.datum,

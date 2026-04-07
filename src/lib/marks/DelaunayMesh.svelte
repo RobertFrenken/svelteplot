@@ -66,7 +66,7 @@
     {#snippet children({ scaledData, usedScales })}
         {@const meshPaths = computeMeshPaths(scaledData)}
         <g class={className}>
-            {#each meshPaths as d}
+            {#each meshPaths as d (d)}
                 <path
                     {d}
                     fill="none"

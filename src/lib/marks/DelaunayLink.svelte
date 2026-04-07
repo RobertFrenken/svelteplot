@@ -31,6 +31,7 @@
     import { addEventHandlers } from './helpers/events.js';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
+    import { SvelteSet } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().delaunayLink
@@ -88,7 +89,7 @@
         // Extract unique edges from triangulation
         const { halfedges, triangles } = delaunay;
         const edges: Edge[] = [];
-        const seen = new Set<string>();
+        const seen = new SvelteSet<string>();
 
         for (let i = 0; i < halfedges.length; i++) {
             const j = halfedges[i];

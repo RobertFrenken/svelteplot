@@ -28,6 +28,7 @@
     import { addEventHandlers } from './helpers/events.js';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
+    import { SvelteMap } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().voronoi
@@ -83,7 +84,7 @@
         const voronoi = delaunay.voronoi([x0, y0, x1, y1]);
 
         // Build reverse map: scaledData index → voronoi cell index
-        const reverseMap = new Map<number, number>();
+        const reverseMap = new SvelteMap<number, number>();
         for (let vi = 0; vi < indexMap.length; vi++) {
             reverseMap.set(indexMap[vi], vi);
         }
