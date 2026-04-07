@@ -61,6 +61,8 @@ The **Voronoi** mark partitions the plane into cells, one per data point, each c
 </Plot>
 ```
 
+[Example](/examples/delaunay/voronoi-penguins)
+
 ## VoronoiMesh
 
 The **VoronoiMesh** mark renders the full Voronoi diagram as a single `<path>`, useful for a lighter visual or background grid.
@@ -158,6 +160,8 @@ The Delaunay marks work great with the [projection](/marks/geo) system. Here is 
 </Plot>
 ```
 
+[Example](/examples/delaunay/voronoi-mesh-penguins) · [Example](/examples/delaunay/voronoi-mesh-walmart)
+
 ## DelaunayMesh
 
 The **DelaunayMesh** mark renders the full Delaunay triangulation as a single `<path>`.
@@ -202,6 +206,8 @@ The **DelaunayMesh** mark renders the full Delaunay triangulation as a single `<
         r={3} />
 </Plot>
 ```
+
+[Example](/examples/delaunay/delaunay-mesh)
 
 You can use the `z` channel to group the meshes:
 
@@ -248,6 +254,8 @@ You can use the `z` channel to group the meshes:
 </Plot>
 ```
 
+[Example](/examples/delaunay/delaunay-mesh-grouped)
+
 ## DelaunayLink
 
 The **DelaunayLink** mark renders individual Delaunay edges as separate paths, allowing per-edge styling from the source data point.
@@ -260,19 +268,19 @@ The **DelaunayLink** mark renders individual Delaunay edges as separate paths, a
     const { penguins } = $derived(page.data.data);
 </script>
 
-<Plot grid testid="delaunay-link">
+<Plot grid color={{ legend: true }}>
     <DelaunayLink
         data={penguins}
         x="culmen_length_mm"
         y="culmen_depth_mm"
-        stroke="species"
-        strokeOpacity={0.5} />
+        stroke="body_mass_g"
+        strokeOpacity={0.55} />
     <Dot
         data={penguins}
         x="culmen_length_mm"
         y="culmen_depth_mm"
-        fill="species"
-        r={3} />
+        fill
+        r={2} />
 </Plot>
 ```
 
@@ -292,6 +300,8 @@ The **DelaunayLink** mark renders individual Delaunay edges as separate paths, a
         r={3} />
 </Plot>
 ```
+
+[Example](/examples/delaunay/delaunay-link)
 
 ## Hull
 
@@ -341,3 +351,5 @@ The **Hull** mark renders the convex hull of data points. Use the **z**, **fill*
         r={3} />
 </Plot>
 ```
+
+[Example](/examples/delaunay/hull-species)
