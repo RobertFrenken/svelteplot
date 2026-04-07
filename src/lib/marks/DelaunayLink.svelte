@@ -24,6 +24,7 @@
         ScaledDataRecord
     } from '../types/index.js';
     import { resolveStyles } from '../helpers/resolve.js';
+    import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import { sort } from '../index.js';
     import Mark from '../Mark.svelte';
@@ -57,59 +58,62 @@
     const plot = usePlot();
 
     interface Edge {
-        /** index into validData for source point */
-        source: number;
-        /** index into validData for target point */
-        target: number;
-        /** SVG path string for this edge */
+        source: ScaledDataRecord;
         path: string;
     }
 
     function computeEdges(scaledData: ScaledDataRecord[]) {
-        // Collect valid points with index mapping
-        const indexMap: number[] = [];
-        const points: { x: number; y: number }[] = [];
+        const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
+        const allEdges: Edge[] = [];
 
-        for (let i = 0; i < scaledData.length; i++) {
-            const d = scaledData[i];
-            if (d.valid && typeof d.x === 'number' && typeof d.y === 'number') {
-                indexMap.push(i);
-                points.push({ x: d.x, y: d.y });
-            }
-        }
+        groupFacetsAndZ(
+            scaledData.map((d) => d.datum),
+            args,
+            (groupItems) => {
+                const groupScaled = groupItems
+                    .map((d) => scaledByDatum.get(d))
+                    .filter(
+                        (d): d is ScaledDataRecord =>
+                            d !== undefined &&
+                            d.valid &&
+                            Number.isFinite(d.x as number) &&
+                            Number.isFinite(d.y as number)
+                    );
 
-        if (points.length < 2) return [];
+                if (groupScaled.length < 2) return;
 
-        const delaunay = Delaunay.from(
-            points,
-            (d) => d.x,
-            (d) => d.y
+                const delaunay = Delaunay.from(
+                    groupScaled,
+                    (d) => d.x as number,
+                    (d) => d.y as number
+                );
+
+                const { halfedges, triangles } = delaunay;
+                const seen = new SvelteSet<string>();
+
+                console.log({ groupScaled, halfedges });
+
+                for (let i = 0; i < halfedges.length; i++) {
+                    const j = halfedges[i];
+                    if (j < i && j !== -1) continue;
+                    const a = triangles[i];
+                    const b = triangles[i % 3 === 2 ? i - 2 : i + 1];
+                    const key = a < b ? `${a},${b}` : `${b},${a}`;
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+
+                    const p = groupScaled[a];
+                    const q = groupScaled[b];
+                    allEdges.push({
+                        source: p,
+                        path: `M${p.x},${p.y}L${q.x},${q.y}`
+                    });
+                }
+            },
+            false
         );
 
-        // Extract unique edges from triangulation
-        const { halfedges, triangles } = delaunay;
-        const edges: Edge[] = [];
-        const seen = new SvelteSet<string>();
-
-        for (let i = 0; i < halfedges.length; i++) {
-            const j = halfedges[i];
-            if (j < i && j !== -1) continue; // already processed from the other side
-            const a = triangles[i];
-            const b = triangles[i % 3 === 2 ? i - 2 : i + 1];
-            const key = a < b ? `${a},${b}` : `${b},${a}`;
-            if (seen.has(key)) continue;
-            seen.add(key);
-
-            const p = points[a];
-            const q = points[b];
-            edges.push({
-                source: indexMap[a],
-                target: indexMap[b],
-                path: `M${p.x},${p.y}L${q.x},${q.y}`
-            });
-        }
-
-        return edges;
+        return allEdges;
     }
 </script>
 
@@ -120,28 +124,30 @@
     {...args}>
     {#snippet children({ mark, usedScales, scaledData })}
         {@const edges = computeEdges(scaledData)}
-        <g class={className}>
-            {#each edges as edge (edge.path)}
-                {@const d = scaledData[edge.source]}
-                {@const [style, styleClass] = resolveStyles(
-                    plot,
-                    d,
-                    { strokeWidth: 1, ...args },
-                    'stroke',
-                    usedScales
-                )}
-                <Anchor options={options as any} datum={d.datum}>
-                    <path
-                        d={edge.path}
-                        class={styleClass}
-                        {style}
-                        {@attach addEventHandlers({
-                            plot,
-                            options: args as any,
-                            datum: d?.datum
-                        })} />
-                </Anchor>
-            {/each}
-        </g>
+        {#if edges.length > 0}
+            <g class={className}>
+                {#each edges as edge (edge.path)}
+                    {@const d = edge.source}
+                    {@const [style, styleClass] = resolveStyles(
+                        plot,
+                        d,
+                        { strokeWidth: 1, ...args },
+                        'stroke',
+                        usedScales
+                    )}
+                    <Anchor options={options as any} datum={d.datum}>
+                        <path
+                            d={edge.path}
+                            class={styleClass}
+                            {style}
+                            {@attach addEventHandlers({
+                                plot,
+                                options: args as any,
+                                datum: d?.datum
+                            })} />
+                    </Anchor>
+                {/each}
+            </g>
+        {/if}
     {/snippet}
 </Mark>

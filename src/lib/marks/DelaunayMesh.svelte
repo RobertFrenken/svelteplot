@@ -74,7 +74,8 @@
                 );
                 const path = delaunay.render();
                 if (path) meshes.push({ path, datum: groupScaled[0] });
-            }
+            },
+            false
         );
 
         return meshes;

@@ -9,6 +9,8 @@
         x?: ChannelAccessor<Datum>;
         /** the vertical position channel */
         y?: ChannelAccessor<Datum>;
+        /** the grouping channel; separate Voronoi diagrams per group */
+        z?: ChannelAccessor<Datum>;
     }
 
     import { Delaunay } from 'd3-delaunay';
@@ -20,7 +22,8 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
-    import { resolveProp, resolveStyles } from '../helpers/resolve.js';
+    import { resolveStyles } from '../helpers/resolve.js';
+    import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import { sort } from '../index.js';
     import Mark from '../Mark.svelte';
@@ -28,7 +31,6 @@
     import { addEventHandlers } from './helpers/events.js';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
-    import { SvelteMap } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().voronoi
@@ -58,38 +60,42 @@
         const y0 = plot.options.marginTop;
         const x1 = x0 + plot.facetWidth;
         const y1 = y0 + plot.facetHeight;
+        if (!(x1 > x0) || !(y1 > y0))
+            return new Map<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
 
-        // Guard against invalid bounds (zero-size or negative during initial render)
-        if (!(x1 > x0) || !(y1 > y0)) return null;
+        const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
+        const cellMap = new Map<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
 
-        // Build index map: validIndex → scaledData index
-        const indexMap: number[] = [];
-        const points: { x: number; y: number }[] = [];
+        groupFacetsAndZ(
+            scaledData.map((d) => d.datum),
+            args,
+            (groupItems) => {
+                const groupScaled = groupItems
+                    .map((d) => scaledByDatum.get(d))
+                    .filter(
+                        (d): d is ScaledDataRecord =>
+                            d !== undefined &&
+                            d.valid &&
+                            Number.isFinite(d.x as number) &&
+                            Number.isFinite(d.y as number)
+                    );
+                if (groupScaled.length < 2) return;
 
-        for (let i = 0; i < scaledData.length; i++) {
-            const d = scaledData[i];
-            if (d.valid && typeof d.x === 'number' && typeof d.y === 'number') {
-                indexMap.push(i);
-                points.push({ x: d.x, y: d.y });
-            }
-        }
+                const delaunay = Delaunay.from(
+                    groupScaled,
+                    (d) => d.x as number,
+                    (d) => d.y as number
+                );
+                const voronoi = delaunay.voronoi([x0, y0, x1, y1]);
 
-        if (points.length < 2) return null;
-
-        const delaunay = Delaunay.from(
-            points,
-            (d) => d.x,
-            (d) => d.y
+                groupScaled.forEach((d, cellIndex) => {
+                    cellMap.set(d, { voronoi, cellIndex });
+                });
+            },
+            false
         );
-        const voronoi = delaunay.voronoi([x0, y0, x1, y1]);
 
-        // Build reverse map: scaledData index → voronoi cell index
-        const reverseMap = new SvelteMap<number, number>();
-        for (let vi = 0; vi < indexMap.length; vi++) {
-            reverseMap.set(indexMap[vi], vi);
-        }
-
-        return { voronoi, reverseMap };
+        return cellMap;
     }
 </script>
 
@@ -99,33 +105,31 @@
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ mark, usedScales, scaledData })}
-        {@const result = computeVoronoi(scaledData)}
+        {@const cellMap = computeVoronoi(scaledData)}
         <g class={className}>
-            {#if result}
-                {#each scaledData as d, i (i)}
-                    {@const vi = result.reverseMap.get(i)}
-                    {#if d.valid && vi != null}
-                        {@const [style, styleClass] = resolveStyles(
-                            plot,
-                            d,
-                            { strokeWidth: 1, ...args },
-                            'stroke',
-                            usedScales
-                        )}
-                        <Anchor options={options as any} datum={d.datum}>
-                            <path
-                                d={result.voronoi.renderCell(vi)}
-                                class={styleClass}
-                                {style}
-                                {@attach addEventHandlers({
-                                    plot,
-                                    options: args as any,
-                                    datum: d?.datum
-                                })} />
-                        </Anchor>
-                    {/if}
-                {/each}
-            {/if}
+            {#each scaledData as d, i (i)}
+                {@const cell = cellMap.get(d)}
+                {#if d.valid && cell}
+                    {@const [style, styleClass] = resolveStyles(
+                        plot,
+                        d,
+                        { strokeWidth: 1, ...args },
+                        'stroke',
+                        usedScales
+                    )}
+                    <Anchor options={options as any} datum={d.datum}>
+                        <path
+                            d={cell.voronoi.renderCell(cell.cellIndex)}
+                            class={styleClass}
+                            {style}
+                            {@attach addEventHandlers({
+                                plot,
+                                options: args as any,
+                                datum: d?.datum
+                            })} />
+                    </Anchor>
+                {/if}
+            {/each}
         </g>
     {/snippet}
 </Mark>

@@ -22,12 +22,12 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
-    import { resolveProp, resolveStyles } from '../helpers/resolve.js';
+    import { resolveStyles } from '../helpers/resolve.js';
+    import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import Mark from '../Mark.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
-    import { SvelteMap } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().hull
@@ -49,45 +49,34 @@
     );
 
     const plot = usePlot();
-    const groupByKey = $derived(
-        (args.z || args.fill || args.stroke || null) as ChannelAccessor | null
-    );
 
     function computeHulls(scaledData: ScaledDataRecord[]) {
-        // Group by z channel (or fill/stroke as fallback)
-        const groups = new SvelteMap<
-            string | number | null,
-            { indices: number[]; datum: ScaledDataRecord }
-        >();
-
-        for (let i = 0; i < scaledData.length; i++) {
-            const d = scaledData[i];
-            if (!d.valid || !Number.isFinite(d.x) || !Number.isFinite(d.y)) continue;
-            const key = (groupByKey ? resolveProp(groupByKey, d.datum) : null) as
-                | string
-                | number
-                | null;
-            let group = groups.get(key);
-            if (!group) {
-                group = { indices: [], datum: d };
-                groups.set(key, group);
-            }
-            group.indices.push(i);
-        }
-
+        const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
         const hulls: { path: string; datum: ScaledDataRecord }[] = [];
 
-        for (const [, group] of groups) {
-            if (group.indices.length < 2) continue;
-            const points = group.indices.map((i) => scaledData[i]);
-            const delaunay = Delaunay.from(
-                points,
-                (d) => d.x as number,
-                (d) => d.y as number
-            );
-            const path = delaunay.renderHull();
-            if (path) hulls.push({ path, datum: group.datum });
-        }
+        groupFacetsAndZ(
+            scaledData.map((d) => d.datum),
+            args,
+            (groupItems) => {
+                const groupScaled = groupItems
+                    .map((d) => scaledByDatum.get(d))
+                    .filter(
+                        (d): d is ScaledDataRecord =>
+                            d !== undefined &&
+                            d.valid &&
+                            Number.isFinite(d.x as number) &&
+                            Number.isFinite(d.y as number)
+                    );
+                if (groupScaled.length < 2) return;
+                const delaunay = Delaunay.from(
+                    groupScaled,
+                    (d) => d.x as number,
+                    (d) => d.y as number
+                );
+                const path = delaunay.renderHull();
+                if (path) hulls.push({ path, datum: groupScaled[0] });
+            }
+        );
 
         return hulls;
     }
