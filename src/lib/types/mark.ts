@@ -19,6 +19,7 @@ export type MarkType =
     | 'custom'
     | 'delaunayLink'
     | 'delaunayMesh'
+    | 'density'
     | 'dot'
     | 'vector'
     | 'frame'

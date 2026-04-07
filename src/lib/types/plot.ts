@@ -35,6 +35,7 @@ import type {
     Contour,
     DelaunayLink,
     DelaunayMesh,
+    Density,
     DifferenceY,
     Dot,
     Frame,
@@ -288,6 +289,10 @@ export type PlotDefaults = {
      * default props for delaunayMesh marks
      */
     delaunayMesh: Partial<Omit<ComponentProps<typeof DelaunayMesh>, IgnoreDefaults>>;
+    /**
+     * default props for density marks
+     */
+    density: Partial<Omit<ComponentProps<typeof Density>, IgnoreDefaults>>;
     /**
      * default props for dot marks
      */
