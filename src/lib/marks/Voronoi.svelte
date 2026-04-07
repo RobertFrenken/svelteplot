@@ -31,6 +31,7 @@
     import { addEventHandlers } from './helpers/events.js';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
+    import { SvelteMap } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().voronoi
@@ -64,7 +65,7 @@
             return new Map<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
 
         const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
-        const cellMap = new Map<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
+        const cellMap = new SvelteMap<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
 
         groupFacetsAndZ(
             scaledData.map((d) => d.datum),

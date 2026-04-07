@@ -32,6 +32,7 @@
     import { addEventHandlers } from './helpers/events.js';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
+    import { SvelteSet } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().delaunayLink
@@ -88,9 +89,7 @@
                 );
 
                 const { halfedges, triangles } = delaunay;
-                const seen = new Set<string>();
-
-                console.log({ groupScaled, halfedges });
+                const seen = new SvelteSet<string>();
 
                 for (let i = 0; i < halfedges.length; i++) {
                     const j = halfedges[i];
@@ -124,10 +123,8 @@
     {#snippet children({ mark, usedScales, scaledData })}
         {@const edges = computeEdges(scaledData)}
         {#if edges.length > 0}
-            {console.log({ edges })}
             <g class={className}>
                 {#each edges as edge, i (i)}
-                    {console.log({ i, edge })}
                     {@const d = edge.source}
                     {@const [style, styleClass] = resolveStyles(
                         plot,
@@ -136,7 +133,6 @@
                         'stroke',
                         usedScales
                     )}
-                    {console.log({ style })}
                     <Anchor options={options as any} datum={d.datum}>
                         <path
                             d={edge.path}
