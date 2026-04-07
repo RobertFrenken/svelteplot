@@ -83,8 +83,8 @@
                     d={meshPath}
                     fill="none"
                     stroke="currentColor"
-                    stroke-opacity={options.strokeOpacity as number ?? 1}
-                    stroke-width={options.strokeWidth as number ?? 1} />
+                    stroke-opacity={(options.strokeOpacity as number) ?? 1}
+                    stroke-width={(options.strokeWidth as number) ?? 1} />
             {/if}
         </g>
     {/snippet}

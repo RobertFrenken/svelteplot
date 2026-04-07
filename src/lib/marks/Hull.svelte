@@ -63,7 +63,10 @@
         for (let i = 0; i < scaledData.length; i++) {
             const d = scaledData[i];
             if (!d.valid || typeof d.x !== 'number' || typeof d.y !== 'number') continue;
-            const key = (groupByKey ? resolveProp(groupByKey, d.datum) : null) as string | number | null;
+            const key = (groupByKey ? resolveProp(groupByKey, d.datum) : null) as
+                | string
+                | number
+                | null;
             let group = groups.get(key);
             if (!group) {
                 group = { indices: [], datum: d };
