@@ -44,7 +44,7 @@
         })
     );
 
-    function computeMeshPaths(scaledData: ScaledDataRecord<Datum>[]) {
+    function computeMeshPaths(scaledData: ScaledDataRecord[]) {
         const valid = scaledData.filter(
             (d) => d.valid && typeof d.x === 'number' && typeof d.y === 'number'
         );
@@ -60,7 +60,7 @@
 
 <Mark
     type={'delaunayMesh' as MarkType}
-    channels={['x', 'y', 'z', 'fill', 'stroke', 'strokeOpacity', 'fillOpacity', 'opacity']}
+    channels={['x', 'y', 'fill', 'stroke', 'strokeOpacity', 'fillOpacity', 'opacity']}
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ scaledData, usedScales })}
@@ -71,8 +71,8 @@
                     {d}
                     fill="none"
                     stroke="currentColor"
-                    stroke-opacity={options.strokeOpacity ?? 1}
-                    stroke-width={options.strokeWidth ?? 1} />
+                    stroke-opacity={options.strokeOpacity as number ?? 1}
+                    stroke-width={options.strokeWidth as number ?? 1} />
             {/each}
         </g>
     {/snippet}

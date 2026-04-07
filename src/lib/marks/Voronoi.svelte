@@ -53,7 +53,7 @@
 
     const plot = usePlot();
 
-    function computeVoronoi(scaledData: ScaledDataRecord<Datum>[]) {
+    function computeVoronoi(scaledData: ScaledDataRecord[]) {
         const x0 = plot.options.marginLeft;
         const y0 = plot.options.marginTop;
         const x1 = x0 + plot.facetWidth;

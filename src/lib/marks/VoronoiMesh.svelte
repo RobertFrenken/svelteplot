@@ -47,7 +47,7 @@
 
     const plot = usePlot();
 
-    function computeMeshPath(scaledData: ScaledDataRecord<Datum>[]) {
+    function computeMeshPath(scaledData: ScaledDataRecord[]) {
         const x0 = plot.options.marginLeft;
         const y0 = plot.options.marginTop;
         const x1 = x0 + plot.facetWidth;
@@ -72,7 +72,7 @@
 
 <Mark
     type={'voronoiMesh' as MarkType}
-    channels={['x', 'y', 'z', 'fill', 'stroke', 'strokeOpacity', 'fillOpacity', 'opacity']}
+    channels={['x', 'y', 'fill', 'stroke', 'strokeOpacity', 'fillOpacity', 'opacity']}
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ scaledData })}
@@ -83,8 +83,8 @@
                     d={meshPath}
                     fill="none"
                     stroke="currentColor"
-                    stroke-opacity={options.strokeOpacity ?? 1}
-                    stroke-width={options.strokeWidth ?? 1} />
+                    stroke-opacity={options.strokeOpacity as number ?? 1}
+                    stroke-width={options.strokeWidth as number ?? 1} />
             {/if}
         </g>
     {/snippet}

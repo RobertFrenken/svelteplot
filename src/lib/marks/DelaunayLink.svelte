@@ -65,7 +65,7 @@
         path: string;
     }
 
-    function computeEdges(scaledData: ScaledDataRecord<Datum>[]) {
+    function computeEdges(scaledData: ScaledDataRecord[]) {
         // Collect valid points with index mapping
         const indexMap: number[] = [];
         const points: { x: number; y: number }[] = [];
@@ -115,7 +115,7 @@
 
 <Mark
     type={'delaunayLink' as MarkType}
-    channels={['x', 'y', 'z', 'fill', 'opacity', 'stroke', 'fillOpacity', 'strokeOpacity']}
+    channels={['x', 'y', 'fill', 'opacity', 'stroke', 'fillOpacity', 'strokeOpacity']}
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ mark, usedScales, scaledData })}

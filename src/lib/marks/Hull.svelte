@@ -22,7 +22,7 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
-    import { resolveStyles } from '../helpers/resolve.js';
+    import { resolveProp, resolveStyles } from '../helpers/resolve.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import Mark from '../Mark.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
@@ -49,18 +49,21 @@
     );
 
     const plot = usePlot();
+    const groupByKey = $derived(
+        (args.z || args.fill || args.stroke || null) as ChannelAccessor<Datum> | null
+    );
 
-    function computeHulls(scaledData: ScaledDataRecord<Datum>[]) {
+    function computeHulls(scaledData: ScaledDataRecord[]) {
         // Group by z channel (or fill/stroke as fallback)
         const groups = new SvelteMap<
             string | number | null,
-            { indices: number[]; datum: ScaledDataRecord<Datum> }
+            { indices: number[]; datum: ScaledDataRecord }
         >();
 
         for (let i = 0; i < scaledData.length; i++) {
             const d = scaledData[i];
             if (!d.valid || typeof d.x !== 'number' || typeof d.y !== 'number') continue;
-            const key = (d.z ?? d.fill ?? d.stroke ?? null) as string | number | null;
+            const key = (groupByKey ? resolveProp(groupByKey, d.datum) : null) as string | number | null;
             let group = groups.get(key);
             if (!group) {
                 group = { indices: [], datum: d };
@@ -69,7 +72,7 @@
             group.indices.push(i);
         }
 
-        const hulls: { path: string; datum: ScaledDataRecord<Datum> }[] = [];
+        const hulls: { path: string; datum: ScaledDataRecord }[] = [];
 
         for (const [, group] of groups) {
             if (group.indices.length < 2) continue;
@@ -89,8 +92,8 @@
 
 <Mark
     type={'hull' as MarkType}
-    channels={['x', 'y', 'z', 'fill', 'opacity', 'stroke', 'fillOpacity', 'strokeOpacity']}
-    defaults={{ fill: 'none', stroke: 'currentColor', strokeWidth: 1.5 }}
+    channels={['x', 'y', 'fill', 'opacity', 'stroke', 'fillOpacity', 'strokeOpacity']}
+    defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ scaledData, usedScales })}
         {@const hulls = computeHulls(scaledData)}
