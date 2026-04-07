@@ -62,7 +62,7 @@
 
         for (let i = 0; i < scaledData.length; i++) {
             const d = scaledData[i];
-            if (!d.valid || typeof d.x !== 'number' || typeof d.y !== 'number') continue;
+            if (!d.valid || !Number.isFinite(d.x) || !Number.isFinite(d.y)) continue;
             const key = (groupByKey ? resolveProp(groupByKey, d.datum) : null) as
                 | string
                 | number
@@ -101,7 +101,7 @@
     {#snippet children({ scaledData, usedScales })}
         {@const hulls = computeHulls(scaledData)}
         <g class={className}>
-            {#each hulls as hull (hull.path)}
+            {#each hulls as hull, i (i)}
                 {@const [style, styleClass] = resolveStyles(
                     plot,
                     hull.datum,
