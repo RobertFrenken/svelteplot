@@ -60,6 +60,7 @@ export default {
                 { title: 'Custom', to: '/marks/custom' },
                 { title: 'Difference', to: '/marks/difference' },
                 { title: 'Contour', to: '/marks/contour' },
+                { title: 'Delaunay / Voronoi', to: '/marks/delaunay' },
                 { title: 'Dot', to: '/marks/dot' },
                 { title: 'Frame', to: '/marks/frame' },
                 { title: 'Geo', to: '/marks/geo' },
