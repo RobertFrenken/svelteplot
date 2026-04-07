@@ -156,7 +156,7 @@ export function hexbin(
             const item: DataRecord = {
                 [xChannel]: bin.cx as RawValue,
                 [yChannel]: bin.cy as RawValue,
-                ...groupProps
+                ...(groupProps as Record<string | symbol, RawValue>)
             };
             reduceOutputs(
                 item,
