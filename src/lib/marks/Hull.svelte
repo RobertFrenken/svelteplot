@@ -50,7 +50,7 @@
 
     const plot = usePlot();
     const groupByKey = $derived(
-        (args.z || args.fill || args.stroke || null) as ChannelAccessor<Datum> | null
+        (args.z || args.fill || args.stroke || null) as ChannelAccessor | null
     );
 
     function computeHulls(scaledData: ScaledDataRecord[]) {
