@@ -80,15 +80,13 @@
 </script>
 
 <Mark type={'hexgrid' as MarkType}>
-    {#snippet children()}
-        <g class={className}>
-            <path
-                d={pathData}
-                {fill}
-                fill-opacity={fillOpacity}
-                {stroke}
-                stroke-opacity={strokeOpacity}
-                stroke-width={strokeWidth} />
-        </g>
-    {/snippet}
+    <g class={className}>
+        <path
+            d={pathData}
+            {fill}
+            fill-opacity={fillOpacity}
+            {stroke}
+            stroke-opacity={strokeOpacity}
+            stroke-width={strokeWidth} />
+    </g>
 </Mark>
