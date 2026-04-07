@@ -56,8 +56,8 @@ describe('DelaunayMesh mark', () => {
         });
 
         const path = container.querySelector('g.delaunay-mesh path') as SVGElement;
-        expect(path.getAttribute('fill')).toBe('none');
-        expect(path.getAttribute('stroke')).toBe('currentColor');
+        expect(path.style.fill).toBe('none');
+        expect(path.style.stroke).toBe('currentColor');
     });
 
     it('applies custom strokeWidth', () => {
@@ -73,7 +73,7 @@ describe('DelaunayMesh mark', () => {
         });
 
         const path = container.querySelector('g.delaunay-mesh path') as SVGElement;
-        expect(path.getAttribute('stroke-width')).toBe('2.5');
+        expect(path.style.strokeWidth).toBe('2.5px');
     });
 
     it('applies custom strokeOpacity', () => {
@@ -89,7 +89,7 @@ describe('DelaunayMesh mark', () => {
         });
 
         const path = container.querySelector('g.delaunay-mesh path') as SVGElement;
-        expect(path.getAttribute('stroke-opacity')).toBe('0.2');
+        expect(path.style.strokeOpacity).toBe('0.2');
     });
 
     it('applies custom CSS class', () => {

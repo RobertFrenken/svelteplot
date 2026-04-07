@@ -55,8 +55,8 @@ describe('VoronoiMesh mark', () => {
         });
 
         const path = container.querySelector('g.voronoi-mesh path') as SVGElement;
-        expect(path.getAttribute('fill')).toBe('none');
-        expect(path.getAttribute('stroke')).toBe('currentColor');
+        expect(path.style.fill).toBe('none');
+        expect(path.style.stroke).toBe('currentColor');
     });
 
     it('applies custom strokeWidth', () => {
@@ -72,7 +72,7 @@ describe('VoronoiMesh mark', () => {
         });
 
         const path = container.querySelector('g.voronoi-mesh path') as SVGElement;
-        expect(path.getAttribute('stroke-width')).toBe('3');
+        expect(path.style.strokeWidth).toBe('3px');
     });
 
     it('applies custom strokeOpacity', () => {
@@ -88,7 +88,7 @@ describe('VoronoiMesh mark', () => {
         });
 
         const path = container.querySelector('g.voronoi-mesh path') as SVGElement;
-        expect(path.getAttribute('stroke-opacity')).toBe('0.3');
+        expect(path.style.strokeOpacity).toBe('0.3');
     });
 
     it('applies custom CSS class', () => {
