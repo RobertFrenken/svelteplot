@@ -21,6 +21,7 @@ export { default as CustomMark } from './CustomMark.svelte';
 export { default as CustomMarkHTML } from './CustomMarkHTML.svelte';
 export { default as DelaunayLink } from './DelaunayLink.svelte';
 export { default as DelaunayMesh } from './DelaunayMesh.svelte';
+export { default as Density } from './Density.svelte';
 export { default as DifferenceY } from './DifferenceY.svelte';
 export { default as Dot } from './Dot.svelte';
 export { default as DotX } from './DotX.svelte';

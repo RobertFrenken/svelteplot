@@ -284,5 +284,4 @@ describe('Voronoi mark', () => {
         const paths = container.querySelectorAll('g.voronoi path');
         expect(paths.length).toBe(0);
     });
-
 });

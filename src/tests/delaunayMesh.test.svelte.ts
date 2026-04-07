@@ -162,6 +162,4 @@ describe('DelaunayMesh mark', () => {
         const paths = container.querySelectorAll('g.delaunay-mesh path');
         expect(paths.length).toBe(1);
     });
-
-
 });
