@@ -21,8 +21,11 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
+    import { resolveStyles } from '../helpers/resolve.js';
+    import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import Mark from '../Mark.svelte';
+    import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
 
     const DEFAULTS = {
@@ -44,17 +47,37 @@
         })
     );
 
+    const plot = usePlot();
+
     function computeMeshPaths(scaledData: ScaledDataRecord[]) {
-        const valid = scaledData.filter(
-            (d) => d.valid && typeof d.x === 'number' && typeof d.y === 'number'
+        const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
+        const meshes: { path: string; datum: ScaledDataRecord }[] = [];
+
+        groupFacetsAndZ(
+            scaledData.map((d) => d.datum),
+            args,
+            (groupItems) => {
+                const groupScaled = groupItems
+                    .map((d) => scaledByDatum.get(d))
+                    .filter(
+                        (d): d is ScaledDataRecord =>
+                            d !== undefined &&
+                            d.valid &&
+                            Number.isFinite(d.x as number) &&
+                            Number.isFinite(d.y as number)
+                    );
+                if (groupScaled.length < 2) return;
+                const delaunay = Delaunay.from(
+                    groupScaled,
+                    (d) => d.x as number,
+                    (d) => d.y as number
+                );
+                const path = delaunay.render();
+                if (path) meshes.push({ path, datum: groupScaled[0] });
+            }
         );
-        if (valid.length < 2) return [];
-        const delaunay = Delaunay.from(
-            valid,
-            (d) => d.x as number,
-            (d) => d.y as number
-        );
-        return [delaunay.render()];
+
+        return meshes;
     }
 </script>
 
@@ -64,15 +87,17 @@
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ scaledData, usedScales })}
-        {@const meshPaths = computeMeshPaths(scaledData)}
+        {@const meshes = computeMeshPaths(scaledData)}
         <g class={className}>
-            {#each meshPaths as d (d)}
-                <path
-                    {d}
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-opacity={(options.strokeOpacity as number) ?? 1}
-                    stroke-width={(options.strokeWidth as number) ?? 1} />
+            {#each meshes as mesh, i (i)}
+                {@const [style, styleClass] = resolveStyles(
+                    plot,
+                    mesh.datum,
+                    { strokeWidth: 1, ...args },
+                    'stroke',
+                    usedScales
+                )}
+                <path d={mesh.path} class={styleClass} {style} />
             {/each}
         </g>
     {/snippet}
