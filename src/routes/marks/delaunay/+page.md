@@ -41,6 +41,24 @@ The **Voronoi** mark partitions the plane into cells, one per data point, each c
 </Plot>
 ```
 
+```svelte
+<Plot grid>
+    <Voronoi
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        fillOpacity={0.3}
+        stroke="species" />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={2} />
+</Plot>
+```
+
 ## VoronoiMesh
 
 The **VoronoiMesh** mark renders the full Voronoi diagram as a single `<path>`, useful for a lighter visual or background grid.
@@ -68,6 +86,22 @@ The **VoronoiMesh** mark renders the full Voronoi diagram as a single `<path>`, 
 </Plot>
 ```
 
+```svelte
+<Plot grid>
+    <VoronoiMesh
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        strokeOpacity={0.3} />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={3} />
+</Plot>
+```
+
 ## DelaunayMesh
 
 The **DelaunayMesh** mark renders the full Delaunay triangulation as a single `<path>`.
@@ -81,6 +115,22 @@ The **DelaunayMesh** mark renders the full Delaunay triangulation as a single `<
 </script>
 
 <Plot grid testid="delaunay-mesh">
+    <DelaunayMesh
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        strokeOpacity={0.3} />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={3} />
+</Plot>
+```
+
+```svelte
+<Plot grid>
     <DelaunayMesh
         data={penguins}
         x="culmen_length_mm"
@@ -123,6 +173,23 @@ The **DelaunayLink** mark renders individual Delaunay edges as separate paths, a
 </Plot>
 ```
 
+```svelte
+<Plot grid>
+    <DelaunayLink
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        stroke="species"
+        strokeOpacity={0.5} />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={3} />
+</Plot>
+```
+
 ## Hull
 
 The **Hull** mark renders the convex hull of data points. Use the **z**, **fill**, or **stroke** channel to draw separate hulls per group.
@@ -136,6 +203,25 @@ The **Hull** mark renders the convex hull of data points. Use the **z**, **fill*
 </script>
 
 <Plot grid testid="hull-species">
+    <Hull
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        stroke="species"
+        fill="species"
+        fillOpacity={0.1}
+        strokeWidth={2} />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={3} />
+</Plot>
+```
+
+```svelte
+<Plot grid>
     <Hull
         data={penguins}
         x="culmen_length_mm"
