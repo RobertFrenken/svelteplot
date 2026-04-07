@@ -9,7 +9,8 @@
     import { Plot, Hull, Dot } from 'svelteplot';
     import type { PenguinsRow } from '../types';
 
-    let { penguins }: { penguins: PenguinsRow[] } = $props();
+    let { penguins }: { penguins: PenguinsRow[] } =
+        $props();
 </script>
 
 <Plot grid>

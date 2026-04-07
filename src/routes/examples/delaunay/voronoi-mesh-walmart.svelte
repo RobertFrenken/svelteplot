@@ -9,17 +9,43 @@
 </script>
 
 <script lang="ts">
-    import { Plot, Geo, Dot, VoronoiMesh } from 'svelteplot';
+    import {
+        Plot,
+        Geo,
+        Dot,
+        VoronoiMesh
+    } from 'svelteplot';
     import * as topojson from 'topojson-client';
-    import type { USStatesAtlas, WalmartRow } from '../types';
+    import type {
+        USStatesAtlas,
+        WalmartRow
+    } from '../types';
 
-    let { walmart, statesTopo }: { walmart: WalmartRow[]; statesTopo: USStatesAtlas } = $props();
+    let {
+        walmart,
+        statesTopo
+    }: {
+        walmart: WalmartRow[];
+        statesTopo: USStatesAtlas;
+    } = $props();
 
-    const land = $derived(topojson.feature(statesTopo, statesTopo.objects.land));
+    const land = $derived(
+        topojson.feature(
+            statesTopo,
+            statesTopo.objects.land
+        )
+    );
 </script>
 
 <Plot projection="albers-usa" height={420}>
-    <Geo data={[land]} stroke="currentColor" strokeWidth={1} />
-    <VoronoiMesh data={walmart} x="lon" y="lat" strokeOpacity={0.2} />
+    <Geo
+        data={[land]}
+        stroke="currentColor"
+        strokeWidth={1} />
+    <VoronoiMesh
+        data={walmart}
+        x="lon"
+        y="lat"
+        strokeOpacity={0.2} />
     <Dot data={walmart} x="lon" y="lat" r={1} fill />
 </Plot>
