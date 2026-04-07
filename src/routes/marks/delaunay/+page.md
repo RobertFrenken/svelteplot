@@ -18,31 +18,32 @@ The **Voronoi** mark partitions the plane into cells, one per data point, each c
 
 ```svelte live
 <script>
-    import { Plot, Voronoi, Dot } from 'svelteplot';
+    import { Plot, Voronoi, Dot, Frame } from 'svelteplot';
     import { page } from '$app/state';
 
     const { penguins } = $derived(page.data.data);
 </script>
 
-<Plot grid testid="voronoi-penguins">
+<Plot testid="voronoi-penguins">
     <Voronoi
         data={penguins}
         x="culmen_length_mm"
         y="culmen_depth_mm"
         fill="species"
         fillOpacity={0.3}
-        stroke="species" />
+        stroke="var(--svelteplot-bg)" />
     <Dot
         data={penguins}
         x="culmen_length_mm"
         y="culmen_depth_mm"
         fill="species"
         r={2} />
+    <Frame />
 </Plot>
 ```
 
 ```svelte
-<Plot grid>
+<Plot>
     <Voronoi
         data={penguins}
         x="culmen_length_mm"
@@ -56,6 +57,7 @@ The **Voronoi** mark partitions the plane into cells, one per data point, each c
         y="culmen_depth_mm"
         fill="species"
         r={2} />
+    <Frame />
 </Plot>
 ```
 
@@ -71,7 +73,7 @@ The **VoronoiMesh** mark renders the full Voronoi diagram as a single `<path>`, 
     const { penguins } = $derived(page.data.data);
 </script>
 
-<Plot grid testid="voronoi-mesh">
+<Plot testid="voronoi-mesh">
     <VoronoiMesh
         data={penguins}
         x="culmen_length_mm"
@@ -87,7 +89,7 @@ The **VoronoiMesh** mark renders the full Voronoi diagram as a single `<path>`, 
 ```
 
 ```svelte
-<Plot grid>
+<Plot>
     <VoronoiMesh
         data={penguins}
         x="culmen_length_mm"
@@ -99,6 +101,60 @@ The **VoronoiMesh** mark renders the full Voronoi diagram as a single `<path>`, 
         y="culmen_depth_mm"
         fill="species"
         r={3} />
+</Plot>
+```
+
+The Delaunay marks work great with the [projection](/marks/geo) system. Here is a Voronoi mesh over Walmart store locations in the USA:
+
+```svelte live
+<script>
+    import {
+        Plot,
+        Geo,
+        Dot,
+        VoronoiMesh
+    } from 'svelteplot';
+    import { page } from '$app/state';
+    import * as topojson from 'topojson-client';
+
+    const { walmart, statesTopo } = $derived(
+        page.data.data
+    );
+
+    const land = $derived(
+        topojson.feature(
+            statesTopo,
+            statesTopo.objects.land
+        )
+    );
+</script>
+
+<Plot
+    projection="albers-usa"
+    height={420}
+    testid="voronoi-walmart">
+    <Geo
+        data={[land]}
+        stroke="currentColor"
+        strokeWidth={1} />
+    <VoronoiMesh
+        data={walmart}
+        x="lon"
+        y="lat"
+        strokeOpacity={0.2} />
+    <Dot data={walmart} x="lon" y="lat" r={1} fill />
+</Plot>
+```
+
+```svelte
+<Plot projection="albers-usa" height={420}>
+    <Geo data={[land]} stroke="currentColor" />
+    <VoronoiMesh
+        data={walmart}
+        x="lon"
+        y="lat"
+        strokeOpacity={0.2} />
+    <Dot data={walmart} x="lon" y="lat" r={1} fill />
 </Plot>
 ```
 
@@ -135,7 +191,54 @@ The **DelaunayMesh** mark renders the full Delaunay triangulation as a single `<
         data={penguins}
         x="culmen_length_mm"
         y="culmen_depth_mm"
+        stroke="species"
+        z="species"
         strokeOpacity={0.3} />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={3} />
+</Plot>
+```
+
+You can use the `z` channel to group the meshes:
+
+```svelte live
+<script>
+    import { Plot, DelaunayMesh, Dot } from 'svelteplot';
+    import { page } from '$app/state';
+
+    const { penguins } = $derived(page.data.data);
+</script>
+
+<Plot grid testid="delaunay-mesh">
+    <DelaunayMesh
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        stroke="species"
+        z="species"
+        strokeOpacity={0.7} />
+    <Dot
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        fill="species"
+        r={3} />
+</Plot>
+```
+
+```svelte
+<Plot grid>
+    <DelaunayMesh
+        data={penguins}
+        x="culmen_length_mm"
+        y="culmen_depth_mm"
+        stroke="species"
+        z="species"
+        strokeOpacity={0.7} />
     <Dot
         data={penguins}
         x="culmen_length_mm"
