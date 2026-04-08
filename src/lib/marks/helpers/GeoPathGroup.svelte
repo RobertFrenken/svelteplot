@@ -92,7 +92,7 @@
 {:else}
     <g clip-path={clipPath} class={className || null} aria-label={ariaLabel}>
         {#each scaledData as d, i (i)}
-            {@const geom = d.datum[geomKey as any]}
+            {@const geom = d.datum[geomKey as any] as any}
             {#if geom?.coordinates?.length}
                 <path
                     d={path(geom)}

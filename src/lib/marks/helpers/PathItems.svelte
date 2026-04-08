@@ -7,6 +7,8 @@
         MarkStyleProps
     } from 'svelteplot/types/index.js';
     import { resolveStyles, resolveProp } from '../../helpers/resolve.js';
+
+    type StyleArgs = Partial<Record<ScaledChannelName | MarkStyleProps, ChannelAccessor>>;
     import { resolveColor } from './canvas.js';
     import type { Attachment } from 'svelte/attachments';
     import CanvasLayer from './CanvasLayer.svelte';
@@ -24,7 +26,7 @@
         canvas = false
     }: {
         paths: { path: string; datum: ScaledDataRecord }[];
-        args: Partial<Record<ScaledChannelName | MarkStyleProps, ChannelAccessor>>;
+        args: Record<string | symbol, any>;
         options: Record<string, any>;
         className: string;
         usedScales: Record<ScaledChannelName, boolean>;
@@ -49,7 +51,7 @@
                 const fillOpacity = datum.fillOpacity ?? 1;
                 const strokeOpacity = datum.strokeOpacity ?? 1;
                 const strokeWidth = resolveProp(
-                    args.strokeWidth as ChannelAccessor,
+                    (args as StyleArgs).strokeWidth as ChannelAccessor,
                     datum.datum,
                     1
                 ) as number;
@@ -90,7 +92,7 @@
             {@const [style, styleClass] = resolveStyles(
                 plot,
                 datum,
-                { strokeWidth: 1, ...args },
+                { strokeWidth: 1, ...(args as StyleArgs) },
                 'stroke',
                 usedScales
             )}
