@@ -2,6 +2,10 @@
 title: Delaunay / Voronoi marks
 ---
 
+:::info
+added in 0.14.0
+:::
+
 The Delaunay marks compute a [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation) or its dual [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) from **x** and **y** positions. Five marks are available:
 
 | Mark             | Description                                  |
