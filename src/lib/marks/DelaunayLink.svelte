@@ -32,6 +32,7 @@
     import PathItems from './helpers/PathItems.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
+    import { SvelteSet } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().delaunayLink
@@ -82,7 +83,7 @@
                     (d) => d.y as number
                 );
                 const { halfedges, triangles } = delaunay;
-                const seen = new Set<string>();
+                const seen = new SvelteSet<string>();
 
                 for (let i = 0; i < halfedges.length; i++) {
                     const j = halfedges[i];
