@@ -12,6 +12,8 @@
         y?: ChannelAccessor<Datum>;
         /** the grouping channel; separate triangulations per group */
         z?: ChannelAccessor<Datum>;
+        /** Render using a canvas element instead of SVG paths. */
+        canvas?: boolean;
     }
 
     import { Delaunay } from 'd3-delaunay';
@@ -23,16 +25,13 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
-    import { resolveStyles } from '../helpers/resolve.js';
     import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import { sort } from '../index.js';
     import Mark from '../Mark.svelte';
-    import Anchor from './helpers/Anchor.svelte';
-    import { addEventHandlers } from './helpers/events.js';
+    import PathItems from './helpers/PathItems.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
-    import { SvelteSet } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().delaunayLink
@@ -43,6 +42,7 @@
     const {
         data = [] as Datum[],
         class: className = 'delaunay-link',
+        canvas = false,
         ...options
     }: DelaunayLinkMarkProps = $derived({ ...DEFAULTS, ...markProps });
 
@@ -57,14 +57,9 @@
 
     const plot = usePlot();
 
-    interface Edge {
-        source: ScaledDataRecord;
-        path: string;
-    }
-
     function computeEdges(scaledData: ScaledDataRecord[]) {
         const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
-        const allEdges: Edge[] = [];
+        const results: { path: string; datum: ScaledDataRecord }[] = [];
 
         groupFacetsAndZ(
             scaledData.map((d) => d.datum),
@@ -79,7 +74,6 @@
                             Number.isFinite(d.x as number) &&
                             Number.isFinite(d.y as number)
                     );
-
                 if (groupScaled.length < 2) return;
 
                 const delaunay = Delaunay.from(
@@ -87,9 +81,8 @@
                     (d) => d.x as number,
                     (d) => d.y as number
                 );
-
                 const { halfedges, triangles } = delaunay;
-                const seen = new SvelteSet<string>();
+                const seen = new Set<string>();
 
                 for (let i = 0; i < halfedges.length; i++) {
                     const j = halfedges[i];
@@ -102,8 +95,8 @@
 
                     const p = groupScaled[a];
                     const q = groupScaled[b];
-                    allEdges.push({
-                        source: p,
+                    results.push({
+                        datum: p,
                         path: `M${p.x},${p.y}L${q.x},${q.y}`
                     });
                 }
@@ -111,7 +104,7 @@
             false
         );
 
-        return allEdges;
+        return results;
     }
 </script>
 
@@ -121,31 +114,13 @@
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ mark, usedScales, scaledData })}
-        {@const edges = computeEdges(scaledData)}
-        {#if edges.length > 0}
-            <g class={className}>
-                {#each edges as edge, i (i)}
-                    {@const d = edge.source}
-                    {@const [style, styleClass] = resolveStyles(
-                        plot,
-                        d,
-                        { strokeWidth: 1, ...args },
-                        'stroke',
-                        usedScales
-                    )}
-                    <Anchor options={options as any} datum={d.datum}>
-                        <path
-                            d={edge.path}
-                            class={styleClass}
-                            {style}
-                            {@attach addEventHandlers({
-                                plot,
-                                options: args as any,
-                                datum: d?.datum
-                            })} />
-                    </Anchor>
-                {/each}
-            </g>
-        {/if}
+        <PathItems
+            paths={computeEdges(scaledData)}
+            {args}
+            {options}
+            {className}
+            {usedScales}
+            {plot}
+            {canvas} />
     {/snippet}
 </Mark>

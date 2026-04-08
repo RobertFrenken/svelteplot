@@ -11,6 +11,8 @@
         y?: ChannelAccessor<Datum>;
         /** the grouping channel; separate Voronoi diagrams per group */
         z?: ChannelAccessor<Datum>;
+        /** Render using a canvas element instead of SVG paths. */
+        canvas?: boolean;
     }
 
     import { Delaunay } from 'd3-delaunay';
@@ -22,16 +24,13 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
-    import { resolveStyles } from '../helpers/resolve.js';
     import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import { sort } from '../index.js';
     import Mark from '../Mark.svelte';
-    import Anchor from './helpers/Anchor.svelte';
-    import { addEventHandlers } from './helpers/events.js';
+    import PathItems from './helpers/PathItems.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
-    import { SvelteMap } from 'svelte/reactivity';
 
     const DEFAULTS = {
         ...getPlotDefaults().voronoi
@@ -42,6 +41,7 @@
     const {
         data = [] as Datum[],
         class: className = 'voronoi',
+        canvas = false,
         ...options
     }: VoronoiMarkProps = $derived({ ...DEFAULTS, ...markProps });
 
@@ -61,11 +61,10 @@
         const y0 = plot.options.marginTop;
         const x1 = x0 + plot.facetWidth;
         const y1 = y0 + plot.facetHeight;
-        if (!(x1 > x0) || !(y1 > y0))
-            return new Map<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
+        if (!(x1 > x0) || !(y1 > y0)) return [];
 
         const scaledByDatum = new Map(scaledData.map((d) => [d.datum, d]));
-        const cellMap = new SvelteMap<ScaledDataRecord, { voronoi: any; cellIndex: number }>();
+        const results: { path: string; datum: ScaledDataRecord }[] = [];
 
         groupFacetsAndZ(
             scaledData.map((d) => d.datum),
@@ -90,13 +89,14 @@
                 const voronoi = delaunay.voronoi([x0, y0, x1, y1]);
 
                 groupScaled.forEach((d, cellIndex) => {
-                    cellMap.set(d, { voronoi, cellIndex });
+                    const path = voronoi.renderCell(cellIndex);
+                    if (path) results.push({ path, datum: d });
                 });
             },
             false
         );
 
-        return cellMap;
+        return results;
     }
 </script>
 
@@ -106,31 +106,13 @@
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ mark, usedScales, scaledData })}
-        {@const cellMap = computeVoronoi(scaledData)}
-        <g class={className}>
-            {#each scaledData as d, i (i)}
-                {@const cell = cellMap.get(d)}
-                {#if d.valid && cell}
-                    {@const [style, styleClass] = resolveStyles(
-                        plot,
-                        d,
-                        { strokeWidth: 1, ...args },
-                        'stroke',
-                        usedScales
-                    )}
-                    <Anchor options={options as any} datum={d.datum}>
-                        <path
-                            d={cell.voronoi.renderCell(cell.cellIndex)}
-                            class={styleClass}
-                            {style}
-                            {@attach addEventHandlers({
-                                plot,
-                                options: args as any,
-                                datum: d?.datum
-                            })} />
-                    </Anchor>
-                {/if}
-            {/each}
-        </g>
+        <PathItems
+            paths={computeVoronoi(scaledData)}
+            {args}
+            {options}
+            {className}
+            {usedScales}
+            {plot}
+            {canvas} />
     {/snippet}
 </Mark>

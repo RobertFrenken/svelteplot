@@ -70,7 +70,7 @@
         MarkType,
         RawValue
     } from '../types/index.js';
-    import DensityCanvas from './helpers/DensityCanvas.svelte';
+    import GeoPathGroup from './helpers/GeoPathGroup.svelte';
     import { SvelteMap, SvelteSet } from 'svelte/reactivity';
     import { contourDensity } from 'd3-contour';
     import { geoPath } from 'd3-geo';
@@ -431,27 +431,6 @@
     });
 
     const path = geoPath();
-
-    /** Resolve a fill/stroke color for a given k-scaled density value. */
-    function resolveColor(prop: string | undefined, value: number): string {
-        if (/^density$/i.test(prop ?? '')) {
-            return (plot.scales.color?.fn(value) as string) ?? 'currentColor';
-        }
-        return prop ?? 'none';
-    }
-
-    /** Build the inline style string for a single density contour path. */
-    function densityStyle(value: number): string {
-        const parts: string[] = [];
-        parts.push(`fill:${resolveColor(fill, value)}`);
-        parts.push(`stroke:${resolveColor(effectiveStroke, value)}`);
-        if (strokeWidth != null) parts.push(`stroke-width:${strokeWidth}`);
-        if (strokeOpacity != null) parts.push(`stroke-opacity:${strokeOpacity}`);
-        if (fillOpacity != null) parts.push(`fill-opacity:${fillOpacity}`);
-        if (opacity != null) parts.push(`opacity:${opacity}`);
-        if (strokeMiterlimit != null) parts.push(`stroke-miterlimit:${strokeMiterlimit}`);
-        return parts.join(';');
-    }
 </script>
 
 <Mark
@@ -461,28 +440,22 @@
     {...options}
     {...markChannelProps}>
     {#snippet children({ scaledData }: { scaledData: ScaledDataRecord[] })}
-        <g clip-path={clipPath} class={className || null} aria-label="density">
-            {#if canvas}
-                <DensityCanvas
-                    {scaledData}
-                    {path}
-                    geomKey={GEOM}
-                    {fill}
-                    stroke={effectiveStroke}
-                    {strokeWidth}
-                    {strokeOpacity}
-                    {fillOpacity}
-                    {opacity}
-                    {strokeMiterlimit} />
-            {:else}
-                {#each scaledData as d, i (i)}
-                    {#if d.datum[GEOM] && (d.datum[GEOM] as DensityGeometry).coordinates.length > 0}
-                        <path
-                            d={path(d.datum[GEOM] as any)}
-                            style={densityStyle(d.datum[RAW_VALUE] as number)} />
-                    {/if}
-                {/each}
-            {/if}
-        </g>
+        <GeoPathGroup
+            {scaledData}
+            {path}
+            geomKey={GEOM}
+            colorKeyword="density"
+            {fill}
+            stroke={effectiveStroke}
+            {strokeWidth}
+            {strokeOpacity}
+            {fillOpacity}
+            {opacity}
+            {strokeMiterlimit}
+            {clipPath}
+            className={className || undefined}
+            ariaLabel="density"
+            {canvas}
+            {plot} />
     {/snippet}
 </Mark>

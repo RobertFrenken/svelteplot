@@ -328,6 +328,7 @@ Renders contour lines (or filled contour bands) from a scalar field using the ma
 | `strokeMiterlimit?` | number                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                        |
 | `clipPath?`         | string                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                        |
 | `class?`            | string                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                        |
+| `canvas?`           | boolean                                                                                                                                                             | Render using a canvas element instead of SVG paths.                                                                                                                                                                                                                                                                                                    |
 | `fx?`               | ChannelAccessor&lt;Datum&gt;                                                                                                                                        | the horizontal facet channel                                                                                                                                                                                                                                                                                                                           |
 | `fy?`               | ChannelAccessor&lt;Datum&gt;                                                                                                                                        | the vertical facet channel                                                                                                                                                                                                                                                                                                                             |
 
@@ -337,12 +338,13 @@ Inherited props: see the [shared section](/api/marks#Inherited-props) below.
 
 Renders individual Delaunay triangulation edges as separate paths, allowing per-edge styling based on the source data point.
 
-| Prop    | Type                         | Description                                             |
-| ------- | ---------------------------- | ------------------------------------------------------- |
-| `data?` | Datum[]                      | the input data array                                    |
-| `x?`    | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                         |
-| `y?`    | ChannelAccessor&lt;Datum&gt; | the vertical position channel                           |
-| `z?`    | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate triangulations per group |
+| Prop      | Type                         | Description                                             |
+| --------- | ---------------------------- | ------------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                    |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                         |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                           |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate triangulations per group |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths.     |
 
 Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps), [LinkableMarkProps](/api/marks#LinkableMarkProps).
 
@@ -350,12 +352,13 @@ Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps), [LinkableMarkPro
 
 Renders the full Delaunay triangulation as a single SVG path.
 
-| Prop    | Type                         | Description                                             |
-| ------- | ---------------------------- | ------------------------------------------------------- |
-| `data?` | Datum[]                      | the input data array                                    |
-| `x?`    | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                         |
-| `y?`    | ChannelAccessor&lt;Datum&gt; | the vertical position channel                           |
-| `z?`    | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate triangulations per group |
+| Prop      | Type                         | Description                                             |
+| --------- | ---------------------------- | ------------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                    |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                         |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                           |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate triangulations per group |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths.     |
 
 Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 
@@ -538,12 +541,13 @@ Inherited props: see the [shared section](/api/marks#Inherited-props) below.
 
 Renders the convex hull of data points. Supports grouping by z/fill/stroke to draw separate hulls per group.
 
-| Prop    | Type                         | Description                                    |
-| ------- | ---------------------------- | ---------------------------------------------- |
-| `data?` | Datum[]                      | the input data array                           |
-| `x?`    | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                |
-| `y?`    | ChannelAccessor&lt;Datum&gt; | the vertical position channel                  |
-| `z?`    | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate hulls per group |
+| Prop      | Type                         | Description                                         |
+| --------- | ---------------------------- | --------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                     |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                       |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate hulls per group      |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths. |
 
 Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 
@@ -884,11 +888,13 @@ Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 
 Renders individual Voronoi cells, one per data point, allowing per-cell styling.
 
-| Prop    | Type                         | Description                     |
-| ------- | ---------------------------- | ------------------------------- |
-| `data?` | Datum[]                      | the input data array            |
-| `x?`    | ChannelAccessor&lt;Datum&gt; | the horizontal position channel |
-| `y?`    | ChannelAccessor&lt;Datum&gt; | the vertical position channel   |
+| Prop      | Type                         | Description                                               |
+| --------- | ---------------------------- | --------------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                      |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                           |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                             |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate Voronoi diagrams per group |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths.       |
 
 Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps), [LinkableMarkProps](/api/marks#LinkableMarkProps).
 
@@ -896,12 +902,13 @@ Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps), [LinkableMarkPro
 
 Renders the full Voronoi diagram as a single SVG path.
 
-| Prop    | Type                         | Description                                       |
-| ------- | ---------------------------- | ------------------------------------------------- |
-| `data?` | Datum[]                      | the input data array                              |
-| `x?`    | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                   |
-| `y?`    | ChannelAccessor&lt;Datum&gt; | the vertical position channel                     |
-| `z?`    | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate diagrams per group |
+| Prop      | Type                         | Description                                         |
+| --------- | ---------------------------- | --------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                     |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                       |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate diagrams per group   |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths. |
 
 Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 

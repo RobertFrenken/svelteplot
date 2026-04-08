@@ -12,6 +12,8 @@
         y?: ChannelAccessor<Datum>;
         /** the grouping channel; separate hulls per group */
         z?: ChannelAccessor<Datum>;
+        /** Render using a canvas element instead of SVG paths. */
+        canvas?: boolean;
     }
 
     import { Delaunay } from 'd3-delaunay';
@@ -22,10 +24,10 @@
         MarkType,
         ScaledDataRecord
     } from '../types/index.js';
-    import { resolveStyles } from '../helpers/resolve.js';
     import { groupFacetsAndZ } from '../helpers/group.js';
     import { recordizeXY } from '../transforms/recordize.js';
     import Mark from '../Mark.svelte';
+    import PathGroup from './helpers/PathGroup.svelte';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
     import { getPlotDefaults } from '../hooks/plotDefaults.js';
 
@@ -38,6 +40,7 @@
     const {
         data = [] as Datum[],
         class: className = 'hull',
+        canvas = false,
         ...options
     }: HullMarkProps = $derived({ ...DEFAULTS, ...markProps });
 
@@ -88,18 +91,13 @@
     defaults={{ fill: 'none', stroke: 'currentColor' }}
     {...args}>
     {#snippet children({ scaledData, usedScales })}
-        {@const hulls = computeHulls(scaledData)}
-        <g class={className}>
-            {#each hulls as hull, i (i)}
-                {@const [style, styleClass] = resolveStyles(
-                    plot,
-                    hull.datum,
-                    { strokeWidth: 1.5, ...args },
-                    'stroke',
-                    usedScales
-                )}
-                <path d={hull.path} class={styleClass} {style} />
-            {/each}
-        </g>
+        <PathGroup
+            paths={computeHulls(scaledData)}
+            {args}
+            {className}
+            {usedScales}
+            {plot}
+            defaultStrokeWidth={1.5}
+            {canvas} />
     {/snippet}
 </Mark>
