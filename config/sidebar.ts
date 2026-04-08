@@ -59,6 +59,7 @@ export default {
                 { title: 'Cell', to: '/marks/cell' },
                 { title: 'Contour', to: '/marks/contour' },
                 { title: 'Custom', to: '/marks/custom' },
+                { title: 'Delaunay / Voronoi', to: '/marks/delaunay' },
                 { title: 'Density', to: '/marks/density' },
                 { title: 'Difference', to: '/marks/difference' },
                 { title: 'Dot', to: '/marks/dot' },
