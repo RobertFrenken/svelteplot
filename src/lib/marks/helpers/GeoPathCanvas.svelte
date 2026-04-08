@@ -19,7 +19,9 @@
         strokeOpacity,
         fillOpacity,
         opacity,
-        strokeMiterlimit
+        strokeMiterlimit,
+        usePerPathFill = false,
+        usePerPathStroke = false
     }: {
         scaledData: ScaledDataRecord[];
         path: GeoPath;
@@ -38,6 +40,8 @@
         fillOpacity?: number;
         opacity?: number;
         strokeMiterlimit?: number;
+        usePerPathFill?: boolean;
+        usePerPathStroke?: boolean;
     } = $props();
 
     const plot = usePlot();
@@ -86,8 +90,16 @@
                 if (!geom?.coordinates?.length) continue;
 
                 const thresholdValue = (d.datum[RAW_VALUE as any] as number) ?? 0;
-                const fillColor = resolveCanvasColor(resolveColorProp(fill, thresholdValue));
-                const strokeColor = resolveCanvasColor(resolveColorProp(stroke, thresholdValue));
+                const fillColor = resolveCanvasColor(
+                    usePerPathFill && d.fill
+                        ? (d.fill as string)
+                        : resolveColorProp(fill, thresholdValue)
+                );
+                const strokeColor = resolveCanvasColor(
+                    usePerPathStroke && d.stroke
+                        ? (d.stroke as string)
+                        : resolveColorProp(stroke, thresholdValue)
+                );
 
                 context.beginPath();
                 path(geom);
