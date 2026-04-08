@@ -25,6 +25,7 @@ export type PenguinsRow = {
     culmen_depth_mm: number;
     flipper_length_mm: number;
     body_mass_g: number;
+    sex: 'MALE' | 'FEMALE' | '';
 };
 
 export type BlsRow = {
