@@ -4,7 +4,7 @@ title: Marks API reference
 
 <div class="inline-toc">
 
-Jump to mark: [Area](/api/marks#Area), [AreaX](/api/marks#AreaX), [AreaY](/api/marks#AreaY), [Arrow](/api/marks#Arrow), [AxisX](/api/marks#AxisX), [AxisY](/api/marks#AxisY), [BarX](/api/marks#BarX), [BarY](/api/marks#BarY), [BollingerX](/api/marks#BollingerX), [BollingerY](/api/marks#BollingerY), [BoxX](/api/marks#BoxX), [BoxY](/api/marks#BoxY), [BrushX](/api/marks#BrushX), [BrushY](/api/marks#BrushY), [Cell](/api/marks#Cell), [CellX](/api/marks#CellX), [CellY](/api/marks#CellY), [ColorLegend](/api/marks#ColorLegend), [Contour](/api/marks#Contour), [DifferenceY](/api/marks#DifferenceY), [Dot](/api/marks#Dot), [DotX](/api/marks#DotX), [DotY](/api/marks#DotY), [Frame](/api/marks#Frame), [Geo](/api/marks#Geo), [Graticule](/api/marks#Graticule), [GridX](/api/marks#GridX), [GridY](/api/marks#GridY), [HTMLTooltip](/api/marks#HTMLTooltip), [Image](/api/marks#Image), [Line](/api/marks#Line), [LineX](/api/marks#LineX), [LineY](/api/marks#LineY), [Link](/api/marks#Link), [Pointer](/api/marks#Pointer), [Raster](/api/marks#Raster), [Rect](/api/marks#Rect), [RectX](/api/marks#RectX), [RectY](/api/marks#RectY), [RegressionX](/api/marks#RegressionX), [RegressionY](/api/marks#RegressionY), [RuleX](/api/marks#RuleX), [RuleY](/api/marks#RuleY), [Sphere](/api/marks#Sphere), [Spike](/api/marks#Spike), [Text](/api/marks#Text), [TickX](/api/marks#TickX), [TickY](/api/marks#TickY), [Trail](/api/marks#Trail), [WaffleX](/api/marks#WaffleX), [WaffleY](/api/marks#WaffleY)
+Jump to mark: [Area](/api/marks#Area), [AreaX](/api/marks#AreaX), [AreaY](/api/marks#AreaY), [Arrow](/api/marks#Arrow), [AxisX](/api/marks#AxisX), [AxisY](/api/marks#AxisY), [BarX](/api/marks#BarX), [BarY](/api/marks#BarY), [BollingerX](/api/marks#BollingerX), [BollingerY](/api/marks#BollingerY), [BoxX](/api/marks#BoxX), [BoxY](/api/marks#BoxY), [BrushX](/api/marks#BrushX), [BrushY](/api/marks#BrushY), [Cell](/api/marks#Cell), [CellX](/api/marks#CellX), [CellY](/api/marks#CellY), [ColorLegend](/api/marks#ColorLegend), [Contour](/api/marks#Contour), [DelaunayLink](/api/marks#DelaunayLink), [DelaunayMesh](/api/marks#DelaunayMesh), [Density](/api/marks#Density), [DifferenceY](/api/marks#DifferenceY), [Dot](/api/marks#Dot), [DotX](/api/marks#DotX), [DotY](/api/marks#DotY), [Frame](/api/marks#Frame), [Geo](/api/marks#Geo), [Graticule](/api/marks#Graticule), [GridX](/api/marks#GridX), [GridY](/api/marks#GridY), [HTMLTooltip](/api/marks#HTMLTooltip), [Hull](/api/marks#Hull), [Image](/api/marks#Image), [Line](/api/marks#Line), [LineX](/api/marks#LineX), [LineY](/api/marks#LineY), [Link](/api/marks#Link), [Pointer](/api/marks#Pointer), [Raster](/api/marks#Raster), [Rect](/api/marks#Rect), [RectX](/api/marks#RectX), [RectY](/api/marks#RectY), [RegressionX](/api/marks#RegressionX), [RegressionY](/api/marks#RegressionY), [RuleX](/api/marks#RuleX), [RuleY](/api/marks#RuleY), [Sphere](/api/marks#Sphere), [Spike](/api/marks#Spike), [Text](/api/marks#Text), [TickX](/api/marks#TickX), [TickY](/api/marks#TickY), [Trail](/api/marks#Trail), [Voronoi](/api/marks#Voronoi), [VoronoiMesh](/api/marks#VoronoiMesh), [WaffleX](/api/marks#WaffleX), [WaffleY](/api/marks#WaffleY)
 
 </div>
 
@@ -328,8 +328,64 @@ Renders contour lines (or filled contour bands) from a scalar field using the ma
 | `strokeMiterlimit?` | number                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                        |
 | `clipPath?`         | string                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                        |
 | `class?`            | string                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                        |
+| `canvas?`           | boolean                                                                                                                                                             | Render using a canvas element instead of SVG paths.                                                                                                                                                                                                                                                                                                    |
 | `fx?`               | ChannelAccessor&lt;Datum&gt;                                                                                                                                        | the horizontal facet channel                                                                                                                                                                                                                                                                                                                           |
 | `fy?`               | ChannelAccessor&lt;Datum&gt;                                                                                                                                        | the vertical facet channel                                                                                                                                                                                                                                                                                                                             |
+
+Inherited props: see the [shared section](/api/marks#Inherited-props) below.
+
+## DelaunayLink
+
+Renders individual Delaunay triangulation edges as separate paths, allowing per-edge styling based on the source data point.
+
+| Prop      | Type                         | Description                                             |
+| --------- | ---------------------------- | ------------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                    |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                         |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                           |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate triangulations per group |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths.     |
+
+Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps), [LinkableMarkProps](/api/marks#LinkableMarkProps).
+
+## DelaunayMesh
+
+Renders the full Delaunay triangulation as a single SVG path.
+
+| Prop      | Type                         | Description                                             |
+| --------- | ---------------------------- | ------------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                    |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                         |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                           |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate triangulations per group |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths.     |
+
+Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
+
+## Density
+
+Renders two-dimensional kernel density estimation as filled or stroked contour paths. Data points with `x` and `y` channels are projected into pixel space and passed to d3's `contourDensity` estimator, which uses a Gaussian kernel to produce a density grid. Iso-density contour bands are then drawn using the marching-squares algorithm. Styling: `fill` and `stroke` accept ordinary CSS color strings **or** the special keyword `"density"`, which maps each contour level's estimated density through the plot's color scale. Defaults: `fill="none"`, `stroke="currentColor"`. Supports faceting via `fx`/`fy`.
+
+| Prop                | Type                         | Description                                                                                                                                                                                                                                                                             |
+| ------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data?`             | Datum[] \| null              | Input data — an array of records with x/y positions.                                                                                                                                                                                                                                    |
+| `x?`                | ChannelAccessor&lt;Datum&gt; | x position channel (data space).                                                                                                                                                                                                                                                        |
+| `y?`                | ChannelAccessor&lt;Datum&gt; | y position channel (data space).                                                                                                                                                                                                                                                        |
+| `weight?`           | ChannelAccessor&lt;Datum&gt; | Optional weight channel; defaults to 1 for each point.                                                                                                                                                                                                                                  |
+| `bandwidth?`        | number                       | Gaussian kernel bandwidth in screen pixels (default 20).<br>Larger values produce smoother, more blurred density estimates.                                                                                                                                                             |
+| `thresholds?`       | number \| number[]           | Density threshold levels. Can be:<br>- a **count** (number): that many evenly-spaced levels from 0 to the<br> maximum density (default 20)<br>- an explicit **array** of threshold values in k-scaled density units<br> (where k = 100; values from 0 to roughly 100× the peak density) |
+| `fill?`             | string                       | Fill color for density bands. Use `"density"` to map each band's<br>estimated density through the plot's color scale. Default `"none"`.                                                                                                                                                 |
+| `stroke?`           | string                       | Stroke color for density isolines. Use `"density"` to map each<br>isoline's estimated density through the plot's color scale.<br>Default `"currentColor"` when fill is `"none"`, otherwise `"none"`.                                                                                    |
+| `strokeWidth?`      | number                       |                                                                                                                                                                                                                                                                                         |
+| `strokeOpacity?`    | number                       |                                                                                                                                                                                                                                                                                         |
+| `fillOpacity?`      | number                       |                                                                                                                                                                                                                                                                                         |
+| `opacity?`          | number                       |                                                                                                                                                                                                                                                                                         |
+| `strokeMiterlimit?` | number                       |                                                                                                                                                                                                                                                                                         |
+| `clipPath?`         | string                       |                                                                                                                                                                                                                                                                                         |
+| `class?`            | string                       |                                                                                                                                                                                                                                                                                         |
+| `canvas?`           | boolean                      | Render using a canvas element instead of SVG paths.                                                                                                                                                                                                                                     |
+| `fx?`               | ChannelAccessor&lt;Datum&gt; | the horizontal facet channel                                                                                                                                                                                                                                                            |
+| `fy?`               | ChannelAccessor&lt;Datum&gt; | the vertical facet channel                                                                                                                                                                                                                                                              |
 
 Inherited props: see the [shared section](/api/marks#Inherited-props) below.
 
@@ -480,6 +536,20 @@ For showing custom HTML tooltips positioned at x/y coordinates
 | `children` | Snippet&lt;[ {'{'} datum: Datum; {'}'} ]&gt; | snippet for rendering the tooltip content; receives the nearest datum |
 
 Inherited props: see the [shared section](/api/marks#Inherited-props) below.
+
+## Hull
+
+Renders the convex hull of data points. Supports grouping by z/fill/stroke to draw separate hulls per group.
+
+| Prop      | Type                         | Description                                         |
+| --------- | ---------------------------- | --------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                     |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                       |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate hulls per group      |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths. |
+
+Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 
 ## Image
 
@@ -811,6 +881,34 @@ Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 | `canvas?`     | boolean                                                                             | if true, renders using Canvas instead of SVG                                     |
 | `cap?`        | 'butt' \| 'round'                                                                   | the cap style for trail endpoints                                                |
 | `resolution?` | number \| 'auto'                                                                    | Samples per segment for curve interpolation                                      |
+
+Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
+
+## Voronoi
+
+Renders individual Voronoi cells, one per data point, allowing per-cell styling.
+
+| Prop      | Type                         | Description                                               |
+| --------- | ---------------------------- | --------------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                      |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                           |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                             |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate Voronoi diagrams per group |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths.       |
+
+Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps), [LinkableMarkProps](/api/marks#LinkableMarkProps).
+
+## VoronoiMesh
+
+Renders the full Voronoi diagram as a single SVG path.
+
+| Prop      | Type                         | Description                                         |
+| --------- | ---------------------------- | --------------------------------------------------- |
+| `data?`   | Datum[]                      | the input data array                                |
+| `x?`      | ChannelAccessor&lt;Datum&gt; | the horizontal position channel                     |
+| `y?`      | ChannelAccessor&lt;Datum&gt; | the vertical position channel                       |
+| `z?`      | ChannelAccessor&lt;Datum&gt; | the grouping channel; separate diagrams per group   |
+| `canvas?` | boolean                      | Render using a canvas element instead of SVG paths. |
 
 Inherited props from [BaseMarkProps](/api/marks#BaseMarkProps).
 

@@ -117,6 +117,8 @@
         strokeMiterlimit?: number;
         clipPath?: string;
         class?: string;
+        /** Render using a canvas element instead of SVG paths. */
+        canvas?: boolean;
         /** the horizontal facet channel */
         fx?: ChannelAccessor<Datum>;
         /** the vertical facet channel */
@@ -136,6 +138,7 @@
     import { contours } from 'd3-contour';
     import { geoPath } from 'd3-geo';
     import Mark from '../Mark.svelte';
+    import GeoPathGroup from './helpers/GeoPathGroup.svelte';
     import { usePlot } from '../hooks/usePlot.svelte.js';
     import {
         interpolateNone,
@@ -195,6 +198,7 @@
         strokeMiterlimit = 1,
         clipPath,
         class: className = '',
+        canvas = false,
         ...options
     }: ContourMarkProps = $derived({ ...DEFAULTS, ...markProps });
 
@@ -491,27 +495,6 @@
         return tz;
     }
 
-    /** Resolve a fill or stroke prop for a given contour level. */
-    function resolveColor(prop: string | undefined, threshold: number): string {
-        if (prop === 'value') {
-            return (plot.scales.color?.fn(threshold) as string) ?? 'currentColor';
-        }
-        return prop ?? 'none';
-    }
-
-    /** Build the inline style string for a single contour path. */
-    function contourStyle(threshold: number): string {
-        const parts: string[] = [];
-        parts.push(`fill:${resolveColor(fill, threshold)}`);
-        parts.push(`stroke:${resolveColor(effectiveStroke, threshold)}`);
-        if (strokeWidth != null) parts.push(`stroke-width:${strokeWidth}`);
-        if (strokeOpacity != null) parts.push(`stroke-opacity:${strokeOpacity}`);
-        if (fillOpacity != null) parts.push(`fill-opacity:${fillOpacity}`);
-        if (opacity != null) parts.push(`opacity:${opacity}`);
-        if (strokeMiterlimit != null) parts.push(`stroke-miterlimit:${strokeMiterlimit}`);
-        return parts.join(';');
-    }
-
     const path = geoPath();
 
     /**
@@ -680,14 +663,22 @@
     {...options}
     {...markChannelProps}>
     {#snippet children({ scaledData }: { scaledData: ScaledDataRecord[] })}
-        <g clip-path={clipPath} class={className || null} aria-label="contour">
-            {#each scaledData as d, i (i)}
-                {#if d.datum[GEOM]}
-                    <path
-                        d={path(d.datum[GEOM] as any)}
-                        style={contourStyle(d.datum[RAW_VALUE] as number)} />
-                {/if}
-            {/each}
-        </g>
+        <GeoPathGroup
+            {scaledData}
+            {path}
+            geomKey={GEOM}
+            colorKeyword="value"
+            {fill}
+            stroke={effectiveStroke}
+            {strokeWidth}
+            {strokeOpacity}
+            {fillOpacity}
+            {opacity}
+            {strokeMiterlimit}
+            {clipPath}
+            className={className || undefined}
+            ariaLabel="contour"
+            {canvas}
+            {plot} />
     {/snippet}
 </Mark>

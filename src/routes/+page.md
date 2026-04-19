@@ -34,6 +34,12 @@ examples:
     - contour/faceted
     - contour/sampled
     - custom/histogram-topline
+    - delaunay/delaunay-link
+    - delaunay/hull-species
+    - delaunay/voronoi-penguins
+    - delaunay/voronoi-mesh-walmart
+    - density/grouped
+    - density/filled
     - difference/anomaly-baseline
     - difference/apple-yoy
     - difference/trade-balance

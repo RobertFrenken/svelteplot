@@ -9,7 +9,8 @@ import { groups as d3Groups } from 'd3-array';
 export function groupFacetsAndZ<T>(
     items: T[],
     channels: Channels<T>,
-    reduce: (items: T[], groupProps?: Record<string, unknown>) => any
+    reduce: (items: T[], groupProps?: Record<string, unknown>) => any,
+    implicitColorZ = true
 ) {
     const groupBy: Array<[ChannelName | null, string | null, (d: DataRecord<T>) => RawValue]> = (
         ['fx', 'fy', 'z'] as ChannelName[]
@@ -17,8 +18,8 @@ export function groupFacetsAndZ<T>(
         let groupByChannel: ChannelName | null = null;
         if (groupChannel === 'z') {
             if (channels.z) groupByChannel = 'z';
-            else if (channels.fill) groupByChannel = 'fill';
-            else if (channels.stroke) groupByChannel = 'stroke';
+            else if (channels.fill && implicitColorZ) groupByChannel = 'fill';
+            else if (channels.stroke && implicitColorZ) groupByChannel = 'stroke';
         } else if (channels[groupChannel]) {
             groupByChannel = groupChannel;
         }

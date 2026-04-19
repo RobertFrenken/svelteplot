@@ -15,7 +15,11 @@ export type MarkType =
     | 'barX'
     | 'barY'
     | 'cell'
+    | 'contour'
     | 'custom'
+    | 'delaunayLink'
+    | 'delaunayMesh'
+    | 'density'
     | 'dot'
     | 'vector'
     | 'frame'
@@ -23,6 +27,7 @@ export type MarkType =
     | 'gridX'
     | 'gridY'
     | 'hexgrid'
+    | 'hull'
     | 'image'
     | 'link'
     | 'line'
@@ -36,6 +41,8 @@ export type MarkType =
     | 'tickX'
     | 'tickY'
     | 'trail'
+    | 'voronoi'
+    | 'voronoiMesh'
     | 'waffleX'
     | 'waffleY';
 

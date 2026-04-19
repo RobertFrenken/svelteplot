@@ -33,6 +33,9 @@ import type {
     BrushY,
     Cell,
     Contour,
+    DelaunayLink,
+    DelaunayMesh,
+    Density,
     DifferenceY,
     Dot,
     Frame,
@@ -40,6 +43,7 @@ import type {
     Graticule,
     GridX,
     GridY,
+    Hull,
     Image,
     Line,
     Link,
@@ -56,7 +60,9 @@ import type {
     TickX,
     TickY,
     Trail,
-    Vector
+    Vector,
+    Voronoi,
+    VoronoiMesh
 } from '../marks/index.js';
 import type WaffleX from 'svelteplot/marks/WaffleX.svelte';
 import type WaffleY from 'svelteplot/marks/WaffleY.svelte';
@@ -276,6 +282,18 @@ export type PlotDefaults = {
      */
     contour: Partial<Omit<ComponentProps<typeof Contour>, IgnoreDefaults>>;
     /**
+     * default props for delaunayLink marks
+     */
+    delaunayLink: Partial<Omit<ComponentProps<typeof DelaunayLink>, IgnoreDefaults>>;
+    /**
+     * default props for delaunayMesh marks
+     */
+    delaunayMesh: Partial<Omit<ComponentProps<typeof DelaunayMesh>, IgnoreDefaults>>;
+    /**
+     * default props for density marks
+     */
+    density: Partial<Omit<ComponentProps<typeof Density>, IgnoreDefaults>>;
+    /**
      * default props for dot marks
      */
     dot: Partial<Omit<ComponentProps<typeof Dot>, IgnoreDefaults>>;
@@ -313,6 +331,10 @@ export type PlotDefaults = {
     gridY:
         | Partial<Omit<ComponentProps<typeof GridY>, IgnoreDefaults> & { implicit: boolean }>
         | true;
+    /**
+     * default props for hull marks
+     */
+    hull: Partial<Omit<ComponentProps<typeof Hull>, IgnoreDefaults>>;
     /**
      * default props for image marks
      */
@@ -389,6 +411,14 @@ export type PlotDefaults = {
      * default props for vector marks
      */
     vector: Partial<Omit<ComponentProps<typeof Vector>, IgnoreDefaults>>;
+    /**
+     * default props for voronoi marks
+     */
+    voronoi: Partial<Omit<ComponentProps<typeof Voronoi>, IgnoreDefaults>>;
+    /**
+     * default props for voronoiMesh marks
+     */
+    voronoiMesh: Partial<Omit<ComponentProps<typeof VoronoiMesh>, IgnoreDefaults>>;
     /**
      * default props for waffle marks, applied to both waffleX and waffleY marks
      */
