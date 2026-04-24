@@ -26,6 +26,7 @@ export type MarkType =
     | 'geo'
     | 'gridX'
     | 'gridY'
+    | 'hexgrid'
     | 'hull'
     | 'image'
     | 'link'

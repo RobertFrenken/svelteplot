@@ -90,6 +90,7 @@ export default {
                 { title: 'Dodge', to: '/transforms/dodge' },
                 { title: 'Filter', to: '/transforms/filter' },
                 { title: 'Group', to: '/transforms/group' },
+                { title: 'Hexbin', to: '/transforms/hexbin' },
                 { title: 'Interval', to: '/transforms/interval' },
                 { title: 'Jitter', to: '/transforms/jitter' },
                 { title: 'Map', to: '/transforms/map' },
