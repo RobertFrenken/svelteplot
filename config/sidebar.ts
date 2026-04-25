@@ -66,6 +66,7 @@ export default {
                 { title: 'Frame', to: '/marks/frame' },
                 { title: 'Geo', to: '/marks/geo' },
                 { title: 'Grid', to: '/marks/grid' },
+                { title: 'Hexbin', to: '/marks/hexbin' },
                 { title: 'Image', to: '/marks/image' },
                 { title: 'Line', to: '/marks/line' },
                 { title: 'Link', to: '/marks/link' },
