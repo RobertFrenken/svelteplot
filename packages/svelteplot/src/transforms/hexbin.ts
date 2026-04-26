@@ -2,6 +2,7 @@ import { resolveChannel } from '../helpers/resolve.js';
 import { extent } from 'd3-array';
 import { reduceOutputs, type ReducerName } from '../helpers/reduce.js';
 import { groupFacetsAndZ } from '../helpers/group.js';
+import { hexLattice, pointToHex } from '../helpers/hexLattice.js';
 import type { DataRecord, RawValue, TransformArg } from '../types/index.js';
 
 type ReducerOption = ReducerName | ((group: DataRecord[]) => RawValue);
@@ -27,8 +28,6 @@ export type HexbinOptions = HexbinOutputChannels & {
      */
     binWidth?: number;
 };
-
-const sqrt3 = Math.sqrt(3);
 
 const CHANNELS = {
     x: Symbol('hexbin_x'),
@@ -77,16 +76,14 @@ export function hexbin(
         return { data: [], ...channels, x: CHANNELS.x, y: CHANNELS.y };
     }
 
-    // Compute hex cell width in data units
+    // Cell pitch in data units. Pointy-topped hex with regular geometry — dy
+    // derived from dx, so dy is in the same data units as dx. Cells are visually
+    // regular only when the data units happen to match across axes; for
+    // pixel-correct cells under arbitrary data extents, use the <Hexbin> mark
+    // instead, which builds its lattice in pixel space after scales exist.
     const dx = explicitBinWidth ?? (xMax - xMin) / Math.max(1, bins);
-    // Vertical spacing between hex centers (pointy-topped hexagons)
-    const dy = (dx * 1.5) / sqrt3;
+    const lattice = hexLattice(dx, xMin + dx / 2, yMin);
 
-    // Hex offset to avoid edge alignment
-    const ox = dx * 0.5;
-    const oy = 0;
-
-    // Bin data into hex cells
     const binMap = new Map<string, HexBin>();
 
     for (let i = 0; i < data.length; i++) {
@@ -94,42 +91,10 @@ export function hexbin(
         const py = yValues[i];
         if (px == null || py == null || isNaN(px) || isNaN(py)) continue;
 
-        // Convert to hex grid coordinates
-        let pj = Math.round((py - yMin - oy) / dy);
-        let pi = Math.round((px - xMin - ox - (pj & 1) * (dx / 2)) / dx);
-
-        // Snap to nearest hex center and check if an adjacent cell is closer
-        const cx0 = (pi + (pj & 1) / 2) * dx + ox + xMin;
-        const cy0 = pj * dy + oy + yMin;
-
-        // Check the two candidate rows
-        const pj1 = pj + 1;
-        const pi1 = Math.round((px - xMin - ox - (pj1 & 1) * (dx / 2)) / dx);
-        const cx1 = (pi1 + (pj1 & 1) / 2) * dx + ox + xMin;
-        const cy1 = pj1 * dy + oy + yMin;
-
-        const pj2 = pj - 1;
-        const pi2 = Math.round((px - xMin - ox - (pj2 & 1) * (dx / 2)) / dx);
-        const cx2 = (pi2 + (pj2 & 1) / 2) * dx + ox + xMin;
-        const cy2 = pj2 * dy + oy + yMin;
-
-        const d0 = (px - cx0) ** 2 + (py - cy0) ** 2;
-        const d1 = (px - cx1) ** 2 + (py - cy1) ** 2;
-        const d2 = (px - cx2) ** 2 + (py - cy2) ** 2;
-
-        if (d1 < d0 && d1 < d2) {
-            pj = pj1;
-            pi = pi1;
-        } else if (d2 < d0 && d2 < d1) {
-            pj = pj2;
-            pi = pi2;
-        }
-
+        const { i: pi, j: pj, cx, cy } = pointToHex(px, py, lattice);
         const key = `${pi},${pj}`;
         let bin = binMap.get(key);
         if (!bin) {
-            const cx = (pi + (pj & 1) / 2) * dx + ox + xMin;
-            const cy = pj * dy + oy + yMin;
             bin = { index: [], cx, cy };
             binMap.set(key, bin);
         }

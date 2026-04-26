@@ -23,11 +23,17 @@
     import Mark from '../Mark.svelte';
     import type { MarkType } from '../types/index.js';
     import { usePlot } from 'svelteplot/hooks/usePlot.svelte.js';
+    import {
+        hexLattice,
+        hexCellsInRect,
+        hexagonSubpath,
+        HEX_DEFAULT_BIN_WIDTH
+    } from '../helpers/hexLattice.js';
 
     let markProps: HexgridMarkProps = $props();
 
     const {
-        binWidth = 20,
+        binWidth = HEX_DEFAULT_BIN_WIDTH,
         stroke = 'currentColor',
         strokeOpacity = 0.1,
         strokeWidth = 1,
@@ -38,42 +44,16 @@
 
     const plot = usePlot();
 
-    const sqrt3 = Math.sqrt(3);
-
-    function r3(x: number) {
-        return Math.round(x * 1000) / 1000;
-    }
-
     const pathData = $derived.by(() => {
-        // Hex offset constants matching hexbin transform
-        const ox = 0.5;
-        const oy = 0;
-        const rx = binWidth / 2;
-        const ry = (rx * 2) / sqrt3;
-        const dx = binWidth;
-        const dy = ry * 1.5;
-
-        const w = plot.facetWidth;
-        const h = plot.facetHeight;
         const ml = plot.options.marginLeft;
         const mt = plot.options.marginTop;
+        const w = plot.facetWidth;
+        const h = plot.facetHeight;
 
-        const cols = Math.ceil(w / dx) + 1;
-        const rows = Math.ceil(h / dy) + 1;
-
+        const lattice = hexLattice(binWidth, ml + binWidth / 2, mt);
         let path = '';
-        for (let j = -1; j <= rows; j++) {
-            for (let i = -1; i <= cols; i++) {
-                const cx = r3((i + (j & 1) / 2 + ox) * dx + ml);
-                const cy = r3((j + oy) * dy + mt);
-                // Pointy-topped hexagon path
-                path += `M${cx},${r3(cy - ry)}`;
-                path += `l${r3(rx)},${r3(ry / 2)}`;
-                path += `v${r3(ry)}`;
-                path += `l${r3(-rx)},${r3(ry / 2)}`;
-                path += `l${r3(-rx)},${r3(-ry / 2)}`;
-                path += `v${r3(-ry)}Z`;
-            }
+        for (const [cx, cy] of hexCellsInRect(lattice, ml, mt, ml + w, mt + h)) {
+            path += hexagonSubpath(cx, cy, lattice.rx, lattice.ry);
         }
         return path;
     });
